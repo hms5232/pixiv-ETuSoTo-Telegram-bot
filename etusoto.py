@@ -8,8 +8,10 @@ Bug or suggestion：https://gitlab.com/hms5232/pixiv-etusoto-telegram-bot/-/issu
 """
 
 
+import os
 from configparser import ConfigParser
-from telegram.ext import Updater, CommandHandler
+
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 
 # 設定一些個人的環境變數
@@ -29,6 +31,13 @@ telegram_bot_token = env['etusoto']['telegram_bot_token']
 	https://api.telegram.org/bot{$token}/getUpdates
 '''
 updater = Updater(token=telegram_bot_token)  # 呼叫 bot 用
+
+
+def init():
+	""" initial """
+	if not os.path.exists('./images_wait_for_search/'):
+		os.makedirs('./images_wait_for_search/')
+		print('Create image folder')
 
 
 """
@@ -82,6 +91,18 @@ def hello(bot, update):
 	"""
 
 
+def get_image_and_search(bot, update):
+	""" Get image which user upload, search and return result. """
+	image_path = "./images_wait_for_search/{}_{}".format(update.message.chat_id, update.message.message_id)
+	update.message.photo[-1].get_file().download(custom_path = image_path)  # download image
+	# TODO: search
+	# TODO: parsing and return
+
+
+# Initial
+init()
+
+
 """
 處理機器人指令（以「/」開頭的訊息）
 
@@ -93,6 +114,8 @@ def hello(bot, update):
 updater.dispatcher.add_handler(CommandHandler(['start', 'about'], welcome))  # 歡迎訊息 / 機器人資訊
 updater.dispatcher.add_handler(CommandHandler('info', show_user_info))  # 顯示使用者資訊
 updater.dispatcher.add_handler(CommandHandler(['hello', 'hi'], hello))  # Hello World!
+
+updater.dispatcher.add_handler(MessageHandler(Filters.photo, get_image_and_search))
 
 
 # 執行機器人必須要的，讓機器人運作聽命
