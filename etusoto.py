@@ -12,6 +12,7 @@ import os
 from configparser import ConfigParser
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import requests
 
 
 # 設定一些個人的環境變數
@@ -95,7 +96,9 @@ def get_image_and_search(bot, update):
 	""" Get image which user upload, search and return result. """
 	image_path = "./images_wait_for_search/{}_{}".format(update.message.chat_id, update.message.message_id)
 	update.message.photo[-1].get_file().download(custom_path = image_path)  # download image
-	# TODO: search
+	# search
+	image_to_search = {'file': open('./images_wait_for_search/{}_{}'.format(update.message.chat_id, update.message.message_id), 'rb')}
+	r = requests.post('https://saucenao.com/search.php', files = image_to_search)
 	# TODO: parsing and return
 
 
