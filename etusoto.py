@@ -56,9 +56,10 @@ def welcome(bot, update):
 	
 	about_bot = ''
 	about_bot = about_bot + 'Hello! 感謝您的使用。\n'
-	about_bot = about_bot + '相信不用我多說，請低調。\n'
+	about_bot = about_bot + '相信不用我多說，請低調🤫。\n'
 	about_bot = about_bot + '若使用者使用不當導致任何紛爭，**與作者一概無關**！\n'
 	about_bot = about_bot + '**如無法接受請立即停止機器人！**\n'
+	about_bot = about_bot + '可透過傳送 `/help` 重新查看使用教學和注意事項\n'
 	
 	bot.send_message(chat_id, about_bot, parse_mode='Markdown')
 
@@ -80,17 +81,14 @@ def show_user_info(bot, update):
 	update.message.reply_text(user_info, disable_notification="True")
 
 
-def hello(bot, update):
-	""" Hello World! """
+def help(bot, update):
+	""" user call for help """
+	manual = ""
+	manual = manual + "直接傳送圖片給小天使，👼會去以圖搜圖🔍。請注意以下幾點：\n"
+	manual = manual + "⚠ 一則訊息只傳送一張1⃣圖片（Forward 亦可👌）\n"
+	manual = manual + "⚠ 請使用圖片🖼而非檔案❌的方式傳送\n"
 	
-	# 兩種方法傳送訊息予使用者
-	update.message.reply_text('Hello world!')  #方法一
-	bot.sendMessage(update.message.from_user.id, 'Welcome to Telegram!')  # 方法二
-	"""
-		方法二的 sendMessage 是 send_message 的別名
-		以 python 的使用習慣，應該是後者較為符合
-		https://python-telegram-bot.readthedocs.io/en/stable/telegram.bot.html#telegram.Bot.send_message
-	"""
+	update.message.reply_text(manual)
 
 
 def get_image_and_search(bot, update):
@@ -140,7 +138,7 @@ init()
 # CommandHandler('指令', 要執行的函數)，使用者輸入「/指令」
 updater.dispatcher.add_handler(CommandHandler(['start', 'about'], welcome))  # 歡迎訊息 / 機器人資訊
 updater.dispatcher.add_handler(CommandHandler('info', show_user_info))  # 顯示使用者資訊
-updater.dispatcher.add_handler(CommandHandler(['hello', 'hi'], hello))  # Hello World!
+updater.dispatcher.add_handler(CommandHandler(['help', 'man'], help))  # 你今天 hh 了嗎
 
 updater.dispatcher.add_handler(MessageHandler(Filters.photo, get_image_and_search))
 
