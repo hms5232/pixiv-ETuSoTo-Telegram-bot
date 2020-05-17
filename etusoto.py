@@ -108,10 +108,10 @@ def get_image_and_search(bot, update):
 		relink = result_table.find('div', class_='resultcontentcolumn').find_all("a", class_="linkify")  # 作品和作者的連結
 		
 		result = ""
-		result += result + "符合度：{}\n\n".format(result_table.find('div', class_='resultsimilarityinfo').string.strip())
-		result += result + result_table.find('div', class_='resulttitle').find('strong').string.strip() + "\n"  # 作品名
-		result += result + "Pixiv ID: [{}]({})\n".format(relink[0].string.strip(), relink[0].get('href'))
-		result += result + "作者：[{}]({})\n".format(relink[1].string.strip(), relink[1].get('href'))
+		result += "符合度：{}\n\n".format(result_table.find('div', class_='resultsimilarityinfo').string.strip())
+		result += result_table.find('div', class_='resulttitle').find('strong').string.strip() + "\n"  # 作品名
+		result += "Pixiv ID: [{}]({})\n".format(relink[0].string.strip(), relink[0].get('href'))
+		result += "作者：[{}]({})\n".format(relink[1].string.strip(), relink[1].get('href'))
 		
 		bot.send_message(update.message.chat_id, result, reply_to_message_id = update.message.message_id, parse_mode = 'Markdown')
 	
