@@ -13,6 +13,7 @@ from configparser import ConfigParser
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import requests
+from bs4 import BeautifulSoup
 
 
 # 設定一些個人的環境變數
@@ -97,9 +98,32 @@ def get_image_and_search(bot, update):
 	image_path = "./images_wait_for_search/{}_{}".format(update.message.chat_id, update.message.message_id)
 	update.message.photo[-1].get_file().download(custom_path = image_path)  # download image
 	# search
-	image_to_search = {'file': open('./images_wait_for_search/{}_{}'.format(update.message.chat_id, update.message.message_id), 'rb')}
-	r = requests.post('https://saucenao.com/search.php', files = image_to_search)
-	# TODO: parsing and return
+	with open('./images_wait_for_search/{}_{}'.format(update.message.chat_id, update.message.message_id), 'rb') as image_file:
+		image_to_search = {'file': image_file}
+		r = requests.post('https://saucenao.com/search.php', files = image_to_search)
+		# parsing and return
+		if r.status_code != 200:
+			print("Request failed!")
+			bot.send_message(update.message.chat_id, "搜尋好像出錯了", reply_to_message_id = update.message.message_id)
+		soup = BeautifulSoup(r.text, 'html.parser')
+		result_table = soup.find('div', {'id':"middle"}).find('table')
+		relink = result_table.find('div', class_='resultcontentcolumn').find_all("a", class_="linkify")  # 作品和作者的連結
+		
+		result = ""
+		result += result + "符合度：{}\n\n".format(result_table.find('div', class_='resultsimilarityinfo').string.strip())
+		result += result + result_table.find('div', class_='resulttitle').find('strong').string.strip() + "\n"  # 作品名
+		result += result + "Pixiv ID: [{}]({})\n".format(relink[0].string.strip(), relink[0].get('href'))
+		result += result + "作者：[{}]({})\n".format(relink[1].string.strip(), relink[1].get('href'))
+		
+		bot.send_message(update.message.chat_id, result, reply_to_message_id = update.message.message_id, parse_mode = 'Markdown')
+	
+	# delete image
+	try:
+		os.remove(image_path)
+	except OSError as ose:
+		print(ose)
+	else:
+		pass
 
 
 # Initial
