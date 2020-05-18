@@ -1,5 +1,5 @@
 # pixiv ETuSoTo Telegram bot
-方便大家找p站圖片的[機器人](http://t.me/PIXIVetusotoBot)，請低調使用。  
+方便大家找p站圖片的機器人，請低調使用。  
 感謝 https://saucenao.com/ ，歡迎大家[斗內💰支持他們](https://saucenao.com/donate.php)或我🙇。
 
 ## 使用方法
@@ -16,6 +16,7 @@
 	3. Beautiful Soup
 
 ## 部屬
+請先複製 `config.ini.example` 出來成 `config.ini` 並填入相關的設定檔內容，之後安裝套件（下面兩種方式二選一）：
 ### 一般方法
 	pip3 install python-telegram-bot==12.4.2
 	pip3 install requests
