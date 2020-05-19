@@ -1,2 +1,3 @@
 [etusoto]
 telegram_bot_token = 
+heroku_app_name = 

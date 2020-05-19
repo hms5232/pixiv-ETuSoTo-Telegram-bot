@@ -25,6 +25,8 @@ env['bot']['telegram_bot_token']
 '''
 # If you don't want use config.ini, please edit following variables for your environment.
 telegram_bot_token = env['etusoto']['telegram_bot_token']
+PORT = int(os.environ.get('PORT', '8443'))  # https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks#heroku
+heroku_app_name = env['etusoto']['heroku_app_name']
 
 
 '''
@@ -148,5 +150,10 @@ updater.dispatcher.add_handler(MessageHandler(Filters.photo, get_image_and_searc
 
 
 # 執行機器人必須要的，讓機器人運作聽命
-updater.start_polling()
+# updater.start_polling()
+# 因為要改用 webhook 的方式，所以棄用上行改下面這兩行
+updater.start_webhook(listen="0.0.0.0",
+                      port=PORT,
+                      url_path=telegram_bot_token)
+updater.bot.set_webhook("https://{}.herokuapp.com/".format(heroku_app_name) + telegram_bot_token)
 updater.idle()
