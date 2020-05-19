@@ -24,9 +24,9 @@ env.get('bot', 'telegram_bot_token')
 env['bot']['telegram_bot_token']
 '''
 # If you don't want use config.ini, please edit following variables for your environment.
-telegram_bot_token = env['etusoto']['telegram_bot_token']
+telegram_bot_token = os.environ["TOKEN"]
 PORT = int(os.environ.get('PORT', '8443'))  # https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks#heroku
-heroku_app_name = env['etusoto']['heroku_app_name']
+heroku_app_name = os.environ["AN"]  # app name
 
 
 '''
