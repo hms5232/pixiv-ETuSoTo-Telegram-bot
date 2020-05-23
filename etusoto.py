@@ -100,7 +100,8 @@ def get_image_and_search(bot, update):
 	# search
 	with open('./images_wait_for_search/{}_{}'.format(update.message.chat_id, update.message.message_id), 'rb') as image_file:
 		image_to_search = {'file': image_file}
-		r = requests.post('https://saucenao.com/search.php', files = image_to_search)
+		data_to_post = {'database': '5'}  # pixiv Images
+		r = requests.post('https://saucenao.com/search.php', files = image_to_search, data = data_to_post)
 		# parsing and return
 		if r.status_code != 200:
 			print("Request failed!")
