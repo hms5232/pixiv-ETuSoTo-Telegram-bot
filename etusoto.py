@@ -131,6 +131,17 @@ def get_image_and_search(bot, update):
 		pass
 
 
+def donate(bot, update):
+	""" donate to author """
+	
+	donate_info = ''
+	donate_info += '感謝您點選此指令查看贊助資訊，如果您願意贊助📈的話，我會很開心🚀。\n'
+	donate_info += '網址如下👇：\n'
+	donate_info += 'https://www.buymeacoffee.com/hms5232'
+	
+	bot.send_message(update.message.from_user.id, donate_info)
+
+
 # Initial
 init()
 
@@ -146,6 +157,7 @@ init()
 updater.dispatcher.add_handler(CommandHandler(['start', 'about'], welcome))  # 歡迎訊息 / 機器人資訊
 updater.dispatcher.add_handler(CommandHandler('info', show_user_info))  # 顯示使用者資訊
 updater.dispatcher.add_handler(CommandHandler(['help', 'man'], help))  # 你今天 hh 了嗎
+updater.dispatcher.add_handler(CommandHandler(['donate', 'present'], donate))  # 有人要斗內了嗚嗚
 
 updater.dispatcher.add_handler(MessageHandler(Filters.photo, get_image_and_search))
 
