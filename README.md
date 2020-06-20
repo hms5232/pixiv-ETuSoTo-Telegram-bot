@@ -12,7 +12,7 @@
 1. Python 3.7 或以上
 2. 必須要有以下套件（可直接用 pip 安裝或使用 pipenv）
 	1. python telegram bot
-	2. request
+	2. requests
 	3. Beautiful Soup
 
 ## 部屬
