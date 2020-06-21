@@ -3,14 +3,11 @@ stages:
 
 push_heroku:
     stage: deploy
-    variables:
-        HEROKU_PROJECT_NAME: $HEROKU_PROJECT_NAME
-        HEROKU_API_KEY: $HEROKU_API_KEY
     script:
         - echo "Now, start deploying project to Heroku.->"
         - apt-get update -qy
         - apt-get install -y ruby-dev
         - gem install dpl
-        - dpl --provider=heroku --app=HEROKU_PROJECT_NAME --api-key=$HEROKU_API_KEY
+        - dpl --provider=heroku --app=$HEROKU_PROJECT_NAME --api-key=$HEROKU_API_KEY
     only:
         - heroku
