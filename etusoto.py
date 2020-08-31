@@ -142,6 +142,19 @@ def donate(bot, update):
 	bot.send_message(update.message.from_user.id, donate_info)
 
 
+def repo(bot, update):
+	""" repository """
+	
+	repo_info = ''
+	repo_info += '本專案開源於 Gitlab 上，\n'
+	repo_info += '歡迎大家給予機器人專案各種回饋，\n'
+	repo_info += '單純的標星星⭐也非常歡迎！\n'
+	repo_info += '\n網址如下👇：\n'
+	repo_info += 'https://gitlab.com/hms5232/pixiv-etusoto-telegram-bot'
+	
+	bot.send_message(update.message.from_user.id, repo_info)
+
+
 # Initial
 init()
 
@@ -158,6 +171,7 @@ updater.dispatcher.add_handler(CommandHandler(['start', 'about'], welcome))  # �
 updater.dispatcher.add_handler(CommandHandler('info', show_user_info))  # 顯示使用者資訊
 updater.dispatcher.add_handler(CommandHandler(['help', 'man'], help))  # 你今天 hh 了嗎
 updater.dispatcher.add_handler(CommandHandler(['donate', 'present'], donate))  # 有人要斗內了嗚嗚
+updater.dispatcher.add_handler(CommandHandler(['contribute', 'code'], repo))  # 歡迎標星星
 
 updater.dispatcher.add_handler(MessageHandler(Filters.photo, get_image_and_search))
 
