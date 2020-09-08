@@ -133,9 +133,9 @@ def donate(bot, update):
 	""" donate to author """
 	
 	donate_info = ''
-	donate_info += '感謝您點選此指令查看贊助資訊，如果您願意贊助📈的話，我會很開心🚀。\n'
+	donate_info += '感謝您點選此指令查看贊助資訊☕，如果您願意贊助🍦的話，我會很開心🚀。\n'
 	donate_info += '網址如下👇：\n'
-	donate_info += 'https://www.buymeacoffee.com/hms5232'
+	donate_info += 'https://ko-fi.com/hms5232'
 	
 	bot.send_message(update.message.from_user.id, donate_info)
 
