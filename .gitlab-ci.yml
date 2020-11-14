@@ -1,11 +1,26 @@
 stages:
+    - safety
     - deploy
+
+default:
+    before_script:
+        - apt-get update -qy
+
+safety_check:
+    # https://pyup.io/safety/
+    stage: safety
+    script:
+        - apt-get install -y python-dev python-pip
+        - pip install safety
+        - safety check
+    only:
+        - merge_requests
+        - schedules
 
 push_heroku:
     stage: deploy
     script:
         - echo "Now, start deploying project to Heroku.->"
-        - apt-get update -qy
         - apt-get install -y ruby-dev
         - gem install dpl
         - dpl --provider=heroku --app=$HEROKU_PROJECT_NAME --api-key=$HEROKU_API_KEY
