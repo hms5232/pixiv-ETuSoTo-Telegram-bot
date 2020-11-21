@@ -112,7 +112,7 @@ def get_image_and_search(bot, update):
 		# 看回傳的結果是否為p站的
 		if relink[0].get('href').find('pixiv.net') != -1:
 			result += "符合度：{}\n\n".format(result_table.find('div', class_='resultsimilarityinfo').string.strip())
-			result += result_table.find('div', class_='resulttitle').find('strong').string.strip() + "\n"  # 作品名
+			result += "`" + result_table.find('div', class_='resulttitle').find('strong').string.strip() + "`\n"  # 作品名
 			result += "Pixiv ID: [{}]({})\n".format(relink[0].string.strip(), relink[0].get('href'))
 			result += "作者：[{}]({})\n".format(relink[1].string.strip(), relink[1].get('href'))
 		else:
