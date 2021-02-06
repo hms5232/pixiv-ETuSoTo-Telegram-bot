@@ -14,6 +14,7 @@ from configparser import ConfigParser
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import requests
 from bs4 import BeautifulSoup
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 # 設定一些個人的環境變數
@@ -118,7 +119,14 @@ def get_image_and_search(bot, update):
 		else:
 			result += "在p站上查無結果"
 		
-		bot.send_message(update.message.chat_id, result, reply_to_message_id = update.message.message_id, parse_mode = 'Markdown')
+		bot.send_message(update.message.chat_id, result, 
+		                 reply_to_message_id = update.message.message_id, 
+		                 parse_mode = 'Markdown',
+						 reply_markup = InlineKeyboardMarkup([[
+							InlineKeyboardButton('查看作者 🧑‍🎨', url = relink[1].get('href')),
+							InlineKeyboardButton('看作品 🖼', url = relink[0].get('href'))
+						 ]])
+						)
 	
 	# delete image
 	try:
@@ -137,7 +145,10 @@ def donate(bot, update):
 	donate_info += '網址如下👇：\n'
 	donate_info += 'https://ko-fi.com/hms5232'
 	
-	bot.send_message(update.message.from_user.id, donate_info)
+	bot.send_message(update.message.from_user.id, donate_info,
+					 reply_markup = InlineKeyboardMarkup([[
+						InlineKeyboardButton('包紅包 🧧 點這裡', url = 'https://ko-fi.com/hms5232')
+					 ]]))
 
 
 def repo(bot, update):
