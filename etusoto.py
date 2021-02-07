@@ -138,16 +138,18 @@ def get_image_and_search(bot, update):
 		result += "`" + result_dict['title'] + "`\n"  # 作品名
 		result += "Pixiv ID: [{}]({})\n".format(result_dict['artwork_id'], result_dict['artwork_url'])
 		result += "作者：[{}]({})\n".format(result_dict['author'], result_dict['author_link'])
+		inline_keyboard_btn = InlineKeyboardMarkup([[
+				InlineKeyboardButton('查看作者 🧑‍🎨', url = result_dict['author_link']),
+				InlineKeyboardButton('看作品 🖼', url = result_dict['artwork_url'])
+			]])
 	else:
 		result += "在p站上查無結果"
+		inline_keyboard_btn = None
 	
 	bot.send_message(update.message.chat_id, result, 
 					 reply_to_message_id = update.message.message_id, 
 					 parse_mode = 'Markdown',
-					 reply_markup = InlineKeyboardMarkup([[
-						InlineKeyboardButton('查看作者 🧑‍🎨', url = result_dict['author_link']),
-						InlineKeyboardButton('看作品 🖼', url = result_dict['artwork_url'])
-					 ]])
+					 reply_markup = inline_keyboard_btn
 					)
 	
 	# delete image
