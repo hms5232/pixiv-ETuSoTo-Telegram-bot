@@ -43,6 +43,36 @@ def init():
 		print('Create image folder')
 
 
+def proxy_search(image_path):
+	""" proxy image for searching """
+	
+	with open(image_path, 'rb') as image_file:
+		image_to_search = {'file': image_file}
+		data_to_post = {'database': '5'}  # pixiv Images
+		r = requests.post('https://saucenao.com/search.php', files = image_to_search, data = data_to_post)
+		# parsing and return
+		if r.status_code != 200:
+			print("Request failed!")
+			bot.send_message(update.message.chat_id, "搜尋好像出錯了", reply_to_message_id = update.message.message_id)
+		soup = BeautifulSoup(r.text, 'html.parser')
+		result_table = soup.find('div', {'id':"middle"}).find('table')
+		relink = result_table.find('div', class_='resultcontentcolumn').find_all("a", class_="linkify")  # 作品和作者的連結
+	
+	# 看回傳的結果是否為p站的
+	if relink[0].get('href').find('pixiv.net') != -1:
+		result = dict(similarity = result_table.find('div', class_='resultsimilarityinfo').string.strip(),  # 相似度
+					  title = result_table.find('div', class_='resulttitle').find('strong').string.strip(),  # 作品名稱
+					  artwork_id = relink[0].string.strip(),  # Pivix ID
+					  artwork_url = relink[0].get('href'),  # Pivix URL
+					  author = relink[1].string.strip(),  # 作者
+					  author_link = relink[1].get('href')  # 作者連結
+					)
+	else:
+		result = dict()
+	
+	return result
+
+
 """
 對應指令的函數們
 
@@ -94,39 +124,29 @@ def help(bot, update):
 
 def get_image_and_search(bot, update):
 	""" Get image which user upload, search and return result. """
-	image_path = "./images_wait_for_search/{}_{}".format(update.message.chat_id, update.message.message_id)
+	image_path = os.path.join("images_wait_for_search", "{}_{}".format(update.message.chat_id, update.message.message_id))
 	update.message.photo[-1].get_file().download(custom_path = image_path)  # download image
 	# search
-	with open('./images_wait_for_search/{}_{}'.format(update.message.chat_id, update.message.message_id), 'rb') as image_file:
-		image_to_search = {'file': image_file}
-		data_to_post = {'database': '5'}  # pixiv Images
-		r = requests.post('https://saucenao.com/search.php', files = image_to_search, data = data_to_post)
-		# parsing and return
-		if r.status_code != 200:
-			print("Request failed!")
-			bot.send_message(update.message.chat_id, "搜尋好像出錯了", reply_to_message_id = update.message.message_id)
-		soup = BeautifulSoup(r.text, 'html.parser')
-		result_table = soup.find('div', {'id':"middle"}).find('table')
-		relink = result_table.find('div', class_='resultcontentcolumn').find_all("a", class_="linkify")  # 作品和作者的連結
-		
-		result = ""
-		# 看回傳的結果是否為p站的
-		if relink[0].get('href').find('pixiv.net') != -1:
-			result += "符合度：{}\n\n".format(result_table.find('div', class_='resultsimilarityinfo').string.strip())
-			result += "`" + result_table.find('div', class_='resulttitle').find('strong').string.strip() + "`\n"  # 作品名
-			result += "Pixiv ID: [{}]({})\n".format(relink[0].string.strip(), relink[0].get('href'))
-			result += "作者：[{}]({})\n".format(relink[1].string.strip(), relink[1].get('href'))
-		else:
-			result += "在p站上查無結果"
-		
-		bot.send_message(update.message.chat_id, result, 
-		                 reply_to_message_id = update.message.message_id, 
-		                 parse_mode = 'Markdown',
-						 reply_markup = InlineKeyboardMarkup([[
-							InlineKeyboardButton('查看作者 🧑‍🎨', url = relink[1].get('href')),
-							InlineKeyboardButton('看作品 🖼', url = relink[0].get('href'))
-						 ]])
-						)
+	result_dict = proxy_search(image_path)
+
+	result = ""
+	# 看回傳的結果是否為p站的
+	if len(result_dict) > 0:
+		result += "符合度：{}\n\n".format(result_dict['similarity'])
+		result += "`" + result_dict['title'] + "`\n"  # 作品名
+		result += "Pixiv ID: [{}]({})\n".format(result_dict['artwork_id'], result_dict['artwork_url'])
+		result += "作者：[{}]({})\n".format(result_dict['author'], result_dict['author_link'])
+	else:
+		result += "在p站上查無結果"
+	
+	bot.send_message(update.message.chat_id, result, 
+					 reply_to_message_id = update.message.message_id, 
+					 parse_mode = 'Markdown',
+					 reply_markup = InlineKeyboardMarkup([[
+						InlineKeyboardButton('查看作者 🧑‍🎨', url = result_dict['author_link']),
+						InlineKeyboardButton('看作品 🖼', url = result_dict['artwork_url'])
+					 ]])
+					)
 	
 	# delete image
 	try:
