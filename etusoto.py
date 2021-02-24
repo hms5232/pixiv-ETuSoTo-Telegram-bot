@@ -55,7 +55,7 @@ def proxy_search(image_path):
 		# parsing and return
 		if r.status_code != 200:
 			print("Request failed!")
-			bot.send_message(update.message.chat_id, "搜尋好像出錯了", reply_to_message_id = update.message.message_id)
+			return dict(err = "搜尋好像出錯了")
 		soup = BeautifulSoup(r.text, 'html.parser')
 		result_table = soup.find('div', {'id':"middle"}).find('table')
 		relink = result_table.find('div', class_='resultcontentcolumn').find_all("a", class_="linkify")  # 作品和作者的連結
@@ -133,7 +133,9 @@ def get_image_and_search(bot, update):
 
 	result = ""
 	# 看回傳的結果是否為p站的
-	if len(result_dict) > 0:
+	if 'err' in result_dict:
+		bot.send_message(update.message.chat_id, result_dict['err'], reply_to_message_id = update.message.message_id)
+	elif len(result_dict) > 0:
 		result += "符合度：{}\n\n".format(result_dict['similarity'])
 		result += "`" + result_dict['title'] + "`\n"  # 作品名
 		result += "Pixiv ID: [{}]({})\n".format(result_dict['artwork_id'], result_dict['artwork_url'])
