@@ -115,11 +115,16 @@ def show_user_info(bot, update):
 def help(bot, update):
 	""" user call for help """
 	manual = ""
-	manual = manual + "直接傳送圖片給小天使，👼會去以圖搜圖🔍。請注意以下幾點：\n"
-	manual = manual + "⚠ 一則訊息只傳送一張1⃣圖片（Forward 亦可👌）\n"
-	manual = manual + "⚠ 請使用圖片🖼而非檔案❌的方式傳送\n"
+	if update.message.chat.type == 'private':
+		manual = manual + "直接傳送圖片給小天使，👼會去以圖搜圖🔍。請注意以下幾點：\n"
+		manual = manual + "⚠ 一則訊息只傳送一張1⃣圖片（Forward 亦可👌）\n"
+		manual = manual + "⚠ 請使用圖片🖼而非檔案❌的方式傳送\n"
+	else:
+		manual = manual + "請使用 `/search` 機器人指令「**回覆**」（**reply**）欲搜尋的圖片訊息\n"
+		manual = manual + "小天使就會去以圖搜圖看看 p 站有沒有🕵\n"
+		manual = manual + "最後回傳最可能的結果。"
 	
-	update.message.reply_text(manual)
+	update.message.reply_text(manual, parse_mode='Markdown')
 
 
 def format_result(bot, update, image_path):
