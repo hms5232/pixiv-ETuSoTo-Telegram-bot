@@ -122,10 +122,9 @@ def help(bot, update):
 	update.message.reply_text(manual)
 
 
-def get_image_and_search(bot, update):
+def format_result(bot, update, image_path):
 	""" Get image which user upload, search and return result. """
-	image_path = os.path.join("images_wait_for_search", "{}_{}".format(update.message.chat_id, update.message.message_id))
-	update.message.photo[-1].get_file().download(custom_path = image_path)  # download image
+	
 	# search
 	result_dict = proxy_search(image_path)
 
@@ -188,6 +187,15 @@ def repo(bot, update):
 	bot.send_message(update.message.from_user.id, repo_info)
 
 
+def get_img(bot, update):
+	""" get image from telegram """
+	
+	image_path = os.path.join("images_wait_for_search", "{}_{}".format(update.message.chat_id, update.message.message_id))
+	update.message.photo[-1].get_file().download(custom_path = image_path)  # download image
+	
+	return format_result(bot, update, image_path)
+
+
 # Initial
 init()
 
@@ -206,7 +214,7 @@ updater.dispatcher.add_handler(CommandHandler(['help', 'man'], help))  # 你今�
 updater.dispatcher.add_handler(CommandHandler(['donate', 'present'], donate))  # 有人要斗內了嗚嗚
 updater.dispatcher.add_handler(CommandHandler(['contribute', 'code'], repo))  # 歡迎標星星
 
-updater.dispatcher.add_handler(MessageHandler(Filters.photo, get_image_and_search))
+updater.dispatcher.add_handler(MessageHandler(Filters.photo, get_img))
 
 
 # 執行機器人必須要的，讓機器人運作聽命
