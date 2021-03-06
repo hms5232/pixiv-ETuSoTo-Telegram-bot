@@ -189,13 +189,30 @@ def repo(bot, update):
 	bot.send_message(update.message.from_user.id, repo_info)
 
 
-def get_img(bot, update):
+def get_img(bot, update, is_reply = False):
 	""" get image from telegram """
 	
 	image_path = os.path.join("images_wait_for_search", "{}_{}".format(update.message.chat_id, update.message.message_id))
-	update.message.photo[-1].get_file().download(custom_path = image_path)  # download image
+	if is_reply:
+		update.message.reply_to_message.photo[-1].get_file().download(custom_path = image_path)
+	else:
+		update.message.photo[-1].get_file().download(custom_path = image_path)  # download image
 	
 	return format_result(bot, update, image_path)
+
+
+def manual_search(bot, update):
+	""" manual search in group """
+	
+	# 檢查有沒有 reply 訊息
+	if update.message.reply_to_message:
+		# 檢查 reply 對象有沒有圖
+		if update.message.reply_to_message.photo:
+			return get_img(bot, update, True)
+		else:
+			update.message.reply_text("所回覆之訊息無發現圖片", disable_notification="True")
+	else:
+		update.message.reply_text("請用「回覆」方式指定欲搜尋的圖片", disable_notification="True")
 
 
 # Initial
@@ -215,6 +232,7 @@ updater.dispatcher.add_handler(CommandHandler('info', show_user_info))  # 顯示
 updater.dispatcher.add_handler(CommandHandler(['help', 'man'], help))  # 你今天 hh 了嗎
 updater.dispatcher.add_handler(CommandHandler(['donate', 'present'], donate))  # 有人要斗內了嗚嗚
 updater.dispatcher.add_handler(CommandHandler(['contribute', 'code'], repo))  # 歡迎標星星
+updater.dispatcher.add_handler(CommandHandler(['search'], manual_search))  # 指定搜尋「被回覆」的訊息圖片
 
 updater.dispatcher.add_handler(MessageHandler(Filters.photo, get_img))
 
