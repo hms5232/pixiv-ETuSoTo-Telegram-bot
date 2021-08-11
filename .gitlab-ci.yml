@@ -1,30 +1,40 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-    - safety
-    - deploy
-
+- safety
+- deploy
+- test
 default:
-    before_script:
-        - apt-get update -qy
-
+  before_script:
+  - apt-get update -qy
 safety_check:
-    # https://pyup.io/safety/
-    stage: safety
-    script:
-        - apt-get install -y python3-dev python3-pip
-        - pip3 install pipenv
-        - pipenv install
-        - pipenv run pip3 install safety
-        - pipenv run safety check
-    only:
-        - merge_requests
-        - schedules
-
+  stage: safety
+  script:
+  - apt-get install -y python3-dev python3-pip
+  - pip3 install pipenv
+  - pipenv install
+  - pipenv run pip3 install safety
+  - pipenv run safety check
+  only:
+  - merge_requests
+  - schedules
 push_heroku:
-    stage: deploy
-    script:
-        - echo "Now, start deploying project to Heroku.->"
-        - apt-get install -y ruby-dev
-        - gem install dpl
-        - dpl --provider=heroku --app=$HEROKU_PROJECT_NAME --api-key=$HEROKU_API_KEY
-    only:
-        - heroku
+  stage: deploy
+  script:
+  - echo "Now, start deploying project to Heroku.->"
+  - apt-get install -y ruby-dev
+  - gem install dpl
+  - dpl --provider=heroku --app=$HEROKU_PROJECT_NAME --api-key=$HEROKU_API_KEY
+  only:
+  - heroku
+sast:
+  variables:
+    SAST_EXCLUDED_ANALYZERS: brakeman, eslint, flawfinder, gosec, kubesec, nodejs-scan,
+      phpcs-security-audit, pmd-apex, security-code-scan, sobelow, spotbugs
+  stage: test
+include:
+- template: Security/SAST.gitlab-ci.yml
