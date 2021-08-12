@@ -43,3 +43,5 @@ sast:
     SAST_EXCLUDED_ANALYZERS: brakeman, eslint, flawfinder, gosec, kubesec, nodejs-scan,
       phpcs-security-audit, pmd-apex, security-code-scan, sobelow, spotbugs
   stage: test
+  before_script:
+    - echo "Gitlab SAST ->"
