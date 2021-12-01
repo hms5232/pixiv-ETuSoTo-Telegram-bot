@@ -1,11 +1,12 @@
 # You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
 # Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
 # Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 include:
-  - template: Security/SAST.gitlab-ci.yml
-
+- template: Security/SAST.gitlab-ci.yml
+- template: Security/Secret-Detection.gitlab-ci.yml
 stages:
   - test
   - test-dependency
@@ -21,9 +22,8 @@ safety_check:
     - pipenv run pip3 install safety
     - pipenv run safety check
   only:
-    - merge_requests
-    - schedules
-
+  - merge_requests
+  - schedules
 push_heroku:
   stage: deploy
   script:
@@ -33,10 +33,8 @@ push_heroku:
     - gem install dpl
     - dpl --provider=heroku --app=$HEROKU_PROJECT_NAME --api-key=$HEROKU_API_KEY
   only:
-    - heroku
-
+  - heroku
 sast:
-  # SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
   variables:
     SAST_EXCLUDED_ANALYZERS: brakeman, eslint, flawfinder, gosec, kubesec, nodejs-scan,
       phpcs-security-audit, pmd-apex, security-code-scan, sobelow, spotbugs
